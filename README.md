@@ -1,4 +1,8 @@
-# mandarin-dictation
+# Mandarin-dictation
+
+Live website available at https://mandarin-dictation.netlify.app
+
+Deployment powered by [Netlify](https://www.netlify.com/)
 
 ## Project setup
 ```
@@ -14,11 +18,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
