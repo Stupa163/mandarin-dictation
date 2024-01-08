@@ -16,7 +16,10 @@
       <div class="rate">
         <label for="rate">Playback speed : ({{rate}})</label>
         <input v-model="rate" name="rate" type="range" min="0.5" max="2" step="0.1" />
-
+      </div>
+      <div class="randomize">
+        <label for="randomize">Randomize words</label>
+        <input v-model="randomize" name="randomize" type="checkbox" />
       </div>
     </div>
     <button @click="speak">Speak</button>
@@ -35,11 +38,23 @@ export default {
       delay: 2,
       repeat: 1,
       rate: 1.0,
+      randomize: false,
+    }
+  },
+  mounted() {
+    let data = localStorage.getItem('data')
+    if (null !== data) {
+      let props = JSON.parse(data)
+      for (let propKey in props) {
+        this[propKey] = props[propKey]
+      }
     }
   },
   methods: {
     async speak() {
-      let words = this.text.split("\n")
+      let words = this.randomize ? this.text.split("\n").sort((a, b) => 0.5 - Math.random()) : this.text.split("\n")
+      localStorage.setItem('data', JSON.stringify(this.$data))
+      console.log(this.$data.text)
       let _this = this;
 
       for (let word of words) {
@@ -111,12 +126,18 @@ textarea {
   flex-direction: column;
   text-align: center;
 
-  .rate {
+  > * {
     display: flex;
     align-items: center;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .rate {
     gap: 1rem;
+    flex-direction: column;
     margin: 1rem 0;
+
     input {
       margin: 0;
       padding: 0;
