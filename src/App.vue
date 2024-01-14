@@ -23,13 +23,10 @@
       </div>
     </div>
     <button @click="speak">Speak</button>
-
   </div>
-
 </template>
 
 <script>
-
 export default {
   name: 'App',
   data() {
@@ -53,8 +50,8 @@ export default {
   methods: {
     async speak() {
       let words = this.randomize ? this.text.split("\n").sort((a, b) => 0.5 - Math.random()) : this.text.split("\n")
+      this.text = words.join("\n")
       localStorage.setItem('data', JSON.stringify(this.$data))
-      console.log(this.$data.text)
       let _this = this;
 
       for (let word of words) {
