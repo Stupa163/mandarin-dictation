@@ -6,11 +6,11 @@
     </div>
     <div class="options">
       <div class="delay">
-        <label for="delay">Delay between each group of words (in seconds) : </label>
+        <label for="delay">Delay between each line (in seconds) : </label>
         <input v-model="delay" name="delay" type="number">
       </div>
       <div class="repeat">
-        <label for="repeat">How many time every group of words is pronounced : </label>
+        <label for="repeat">How many time every line is pronounced : </label>
         <input v-model="repeat" name="repeat" type="number">
       </div>
       <div class="rate">
@@ -18,11 +18,17 @@
         <input v-model="rate" name="rate" type="range" min="0.5" max="2" step="0.1" />
       </div>
       <div class="randomize">
-        <label for="randomize">Randomize words</label>
+        <label for="randomize">Randomize lines</label>
         <input v-model="randomize" name="randomize" type="checkbox" />
       </div>
+      <div class="step-by-step">
+        <label for="step-by-step">Line by line</label>
+        <input v-model="step" name="step-by-step" type="checkbox" />
+        <button @click="switchToNext" class="next" v-if="step">Next</button>
+      </div>
+
     </div>
-    <button @click="speak">Speak</button>
+    <button @click="speak" :disabled="speaking">Speak</button>
   </div>
 </template>
 
@@ -36,6 +42,9 @@ export default {
       repeat: 1,
       rate: 1.0,
       randomize: false,
+      step: false,
+      next: false,
+      speaking: false
     }
   },
   mounted() {
@@ -53,13 +62,26 @@ export default {
       this.text = words.join("\n")
       localStorage.setItem('data', JSON.stringify(this.$data))
       let _this = this;
+      this.speaking = true
 
       for (let word of words) {
-        for (let i = 0; i < this.repeat; i++) {
-          await _this.say(word)
-          await _this.timer(this.delay * 1000)
+        if (this.step) {
+          do {
+            await _this.say(word)
+            await _this.timer(this.delay * 1000)
+            if (this.next) {
+              this.next = false
+              break
+            }
+          } while (true)
+        } else {
+          for (let i = 0; i < this.repeat; i++) {
+            await _this.say(word)
+            await _this.timer(this.delay * 1000)
+          }
         }
       }
+      this.speaking = false
     },
     say(text) {
       return new Promise((resolve, reject) => {
@@ -76,6 +98,9 @@ export default {
     },
     timer(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms))
+    },
+    switchToNext() {
+      this.next = true
     }
   }
 }
@@ -153,7 +178,20 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
+
 button:hover {
   background-color: #3e8e41;
 }
+
+.next {
+  margin-top: 0;
+  padding: 5px 10px;
+  background-color: #288dce;
+
+  &:hover {
+    background-color: #0875bb;
+
+  }
+}
+
 </style>
