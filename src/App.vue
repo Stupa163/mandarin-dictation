@@ -48,10 +48,14 @@ export default {
     }
   },
   mounted() {
+    const skippedProps = ['next', 'speaking']
     let data = localStorage.getItem('data')
     if (null !== data) {
       let props = JSON.parse(data)
       for (let propKey in props) {
+        if (skippedProps.includes(propKey)) {
+          continue;
+        }
         this[propKey] = props[propKey]
       }
     }
